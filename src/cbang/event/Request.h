@@ -56,7 +56,7 @@ namespace cb {
   class SSL;
 
   namespace Event {
-    class Connection;
+    class HTTPConn;
 
     class Request : virtual public RefCounted, public Enum {
       Headers inputHeaders;
@@ -72,7 +72,7 @@ namespace cb {
       HTTPStatus responseCode;
       std::string responseCodeLine;
 
-      SmartPointer<Connection> connection;
+      SmartPointer<HTTPConn> connection;
       ConnectionError connError;
 
       SmartPointer<Session> session;
@@ -129,9 +129,8 @@ namespace cb {
       std::string getRequestLine() const;
 
       bool hasConnection() const {return connection.isSet();}
-      Connection &getConnection() const {return *connection;}
-      void setConnection(const SmartPointer<Connection> &con)
-        {connection = con;}
+      const SmartPointer<HTTPConn> &getConnection() const {return connection;}
+      void setConnection(const SmartPointer<HTTPConn> &con) {connection = con;}
       bool isConnected() const;
       ConnectionError getConnectionError() const {return connError;}
       void setConnectionError(ConnectionError err) {connError = err;}
@@ -189,6 +188,7 @@ namespace cb {
       void outSet(const std::string &name, const std::string &value);
       void outRemove(const std::string &name);
 
+      bool isPersistent() const;
       void setPersistent(bool x);
       virtual void setCache(uint32_t age);
 
@@ -259,14 +259,12 @@ namespace cb {
 
       virtual void redirect(const URI &uri,
                             HTTPStatus code = HTTP_TEMPORARY_REDIRECT);
-      virtual void cancel();
 
       // Callbacks
       virtual void onHeaders() {}
-      virtual void onRequest();
       virtual bool onContinue() {return true;}
       virtual void onProgress(unsigned bytes, int total) {}
-      virtual void onResponse(ConnectionError code) {}
+      virtual void onResponse(ConnectionError error) {}
       virtual void onComplete() {}
 
       // Used by Connection
