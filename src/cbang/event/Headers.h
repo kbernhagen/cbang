@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <cbang/String.h>
 #include <cbang/util/OrderedDict.h>
 
 #include <ostream>
@@ -41,7 +42,14 @@ namespace cb {
   namespace Event {
     class Buffer;
 
-    class Headers : public OrderedDict<std::string> {
+    struct HeaderKeyCompare {
+      bool operator()(const std::string &a, const std::string &b) const {
+        return String::toLower(a) < String::toLower(b);
+      }
+    };
+
+    class Headers :
+      public OrderedDict<std::string, std::string, HeaderKeyCompare> {
     public:
       std::string find(const std::string &key) const;
       void set(const std::string &key, const std::string &value)
