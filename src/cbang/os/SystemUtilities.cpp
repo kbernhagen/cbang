@@ -555,7 +555,7 @@ namespace cb {
     /// Check maximum number of open files
     unsigned getMaxFiles() {
 #ifdef _WIN32
-      THROW("getMaxFiles() not supported on Windows");
+      THROW(CBANG_FUNC "() not supported on Windows");
 
 #else
       struct rlimit rlim;
@@ -570,7 +570,7 @@ namespace cb {
 
     void setMaxFiles(unsigned files) {
 #ifdef _WIN32
-      THROW("setMaxFiles() not supported on Windows");
+      THROW(CBANG_FUNC "() not supported on Windows");
 
 #else
       struct rlimit rlim;
